@@ -120,3 +120,33 @@ All test accounts and domain names represent a fictional lab environment.
 - Security control validation
 - Virtualization and network isolation
 - Technical documentation and Git version control
+
+## Active Directory Security Controls
+
+### Workstation Security Baseline — Automatic Session Lock
+
+**Objective:** Reduce the risk of unauthorized access to unattended Windows workstations.
+
+**Environment:**
+- Domain: `northstar.test`
+- Domain Controller: `NS-DC01` (Windows Server 2025)
+- Workstation: `NS-WS01` (Windows 11)
+- Organizational Unit: `Workstations`
+- Group Policy Object: `GPO-Workstation-Security-Baseline`
+
+**Implementation:**
+1. Moved `NS-WS01` into the Workstations OU.
+2. Created and linked a dedicated workstation security GPO.
+3. Configured `Interactive logon: Machine inactivity limit` to 600 seconds.
+4. Applied the policy using `gpupdate /force`.
+
+**Validation:**
+- Confirmed GPO application using `gpresult /r /scope computer`.
+- Verified registry value `InactivityTimeoutSecs` was `0x258` (600 seconds).
+- Confirmed the workstation automatically locked after 10 minutes of inactivity.
+
+**Result:** PASS — The workstation security control was successfully deployed and validated.
+
+**Evidence:** `GPO-Inactivity-Timeout-Verification.png` (screenshot captured; repository upload pending).
+
+**Security concepts:** Group Policy, Active Directory organizational units, centralized security management, and security control validation.
