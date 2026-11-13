@@ -150,3 +150,45 @@ All test accounts and domain names represent a fictional lab environment.
 **Evidence:** `GPO-Inactivity-Timeout-Verification.png` (screenshot captured; repository upload pending).
 
 **Security concepts:** Group Policy, Active Directory organizational units, centralized security management, and security control validation.
+
+## SOC Detection Lab — Windows Failed Authentication
+
+### Objective
+Validate that the Wazuh SIEM can detect and alert on failed Windows authentication attempts against an Active Directory domain controller.
+
+### Lab Environment
+- Domain: `northstar.test`
+- Domain controller: `NS-DC01` — Windows Server 2025 (`192.168.100.10`)
+- SIEM: `NS-SIEM01` — Wazuh 4.14 (`192.168.100.40`)
+- Test account: `NORTHSTAR\smitchell`
+
+### Test Procedure
+1. Installed and registered the Wazuh Windows agent on `NS-DC01`.
+2. Confirmed the agent reported an Active status in Wazuh.
+3. Generated one controlled failed authentication using `runas` and an intentionally incorrect password.
+4. Verified Windows Security Event ID 4625 in PowerShell.
+5. Located the corresponding event in Wazuh Threat Hunting.
+6. Inspected the alert metadata and classification.
+
+### Detection Results
+- Windows Event ID: **4625** — Failed logon
+- Wazuh rule ID: **60122**
+- Wazuh severity: **Level 5**
+- Alert description: **Logon Failure — Unknown user or bad password**
+- Logon type: **2** — Interactive
+- Failure substatus: **0xC000006A** — Incorrect password
+- Source IP: **::1** — Local IPv6 loopback
+- MITRE mapping: **T1531 — Account Access Removal** (rule metadata; not evidence that this technique occurred)
+
+### Analyst Assessment
+The alert corresponded to an authorized, single-attempt authentication test performed locally on the domain controller. The failure was expected and did not indicate an actual compromise. Windows event logging, Wazuh agent collection, and SIEM alert generation were successfully validated.
+
+### Skills Demonstrated
+- Windows Security event analysis
+- Active Directory authentication monitoring
+- SIEM agent deployment and verification
+- Wazuh alert investigation and rule interpretation
+- Controlled detection testing and evidence preservation
+
+### Evidence
+A PDF containing the Wazuh alert details is stored in the `evidence/` directory.
